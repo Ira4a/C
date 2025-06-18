@@ -7,14 +7,27 @@
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+
+  <div id="offline-message" class="overlay hidden">No Internet Connection</div>
+
   <div class="chat-container">
     <header class="chat-header">Messenger</header>
+
+    <div class="contacts-bar" id="contacts">
+      <!-- Example contacts -->
+      <button class="contact-btn" onclick="selectContact('Anna')">Anna</button>
+      <button class="contact-btn" onclick="selectContact('John')">John</button>
+      <button class="contact-btn" onclick="selectContact('Bot')">Bot</button>
+    </div>
+
     <div class="chat-messages" id="messages"></div>
+
     <form id="chat-form" class="chat-form">
       <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" required />
       <button type="submit">Send</button>
     </form>
   </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
