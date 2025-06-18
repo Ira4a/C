@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
   <title>Messenger</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div id="offline">You're offline...</div>
 
-  <div id="offline-message" class="overlay hidden">No Internet Connection</div>
+  <div id="auth">
+    <input id="phone" placeholder="Phone number" />
+    <input id="pass" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
 
-  <div class="chat-container">
-    <header class="chat-header">Messenger</header>
-
-    <div class="contacts-bar" id="contacts">
-      <!-- Example contacts -->
-      <button class="contact-btn" onclick="selectContact('Anna')">Anna</button>
-      <button class="contact-btn" onclick="selectContact('John')">John</button>
-      <button class="contact-btn" onclick="selectContact('Bot')">Bot</button>
+  <div id="app" hidden>
+    <header>
+      <button id="btnMenu">☰</button>
+      <h1>Messenger</h1>
+      <button onclick="logout()">Logout</button>
+    </header>
+    <div id="contacts" class="hide"></div>
+    <div id="chat">
+      <div id="messages"></div>
+      <form onsubmit="sendMsg(event)">
+        <input id="msgInput" placeholder="Type a message..." autocomplete="off" />
+        <button>Send</button>
+      </form>
     </div>
-
-    <div class="chat-messages" id="messages"></div>
-
-    <form id="chat-form" class="chat-form">
-      <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" required />
-      <button type="submit">Send</button>
-    </form>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
