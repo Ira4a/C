@@ -37,6 +37,14 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
+.message {
+  margin-bottom: 10px;
+  background-color: #e1f0ff;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
 .chat-form {
   display: flex;
   padding: 0.5rem;
