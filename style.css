@@ -1,125 +1,36 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f3f3f3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: sans-serif; }
+#offline {
+  display: none; position: fixed; top: 0; left: 0; right: 0;
+  background: red; color: white; text-align: center;
+  padding: 1rem; z-index: 1000;
 }
-
-.chat-container {
-  width: 100%;
-  max-width: 400px;
-  height: 600px;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+#auth, #app { padding: 1rem; }
+header {
+  display: flex; justify-content: space-between;
+  align-items: center; background: #333; color: #fff; padding: 1rem;
 }
-
-.chat-header {
-  background-color: #4a90e2;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.2rem;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+#contacts {
+  position: absolute; top: 3.5rem; left: 0;
+  background: #eee; width: 200px; max-height: 80vh;
+  overflow-y: auto; transition: transform 0.3s;
+  transform: translateX(-100%);
 }
-
-.chat-messages {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+#contacts.show { transform: translateX(0); }
+#contacts div {
+  padding: 0.5rem; border-bottom: 1px solid #ccc; cursor: pointer;
 }
-
+#chat { margin-top: 4rem; }
+#messages {
+  height: 60vh; overflow-y: auto;
+  border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem;
+}
 .message {
-  margin-bottom: 10px;
-  background-color: #e1f0ff;
-  padding: 10px;
-  border-radius: 8px;
+  margin: 0.5rem 0; padding: 0.5rem;
+  background: #def; border-radius: 5px;
 }
-
-.chat-form {
-  display: flex;
-  padding: 0.5rem;
-}
-
-.chat-form input {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.chat-form button {
-  margin-left: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-/* OFFLINE MESSAGE */
-.overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  background-color: crimson;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  font-weight: bold;
-  z-index: 10;
-}
-.hidden {
-  display: none;
-}
-
-/* CONTACTS BAR */
-.contacts-bar {
-  display: flex;
-  overflow-x: auto;
-  padding: 0.5rem;
-  background-color: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-}
-.contact-btn {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #4a90e2;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.contact-btn:hover {
-  background: #357bd8;
-}
-
-/* CHAT */
-.chat-messages .message {
-  margin-bottom: 10px;
-  background-color: #e1f0ff;
-  padding: 10px;
-  border-radius: 8px;
-  position: relative;
-}
-.message .meta {
-  font-size: 0.75rem;
-  color: gray;
-  margin-top: 4px;
-}
-.message .status {
-  font-size: 0.7rem;
-  color: green;
-  position: absolute;
-  right: 10px;
-  bottom: 5px;
-}
-
+.message.own { background: #bdf; text-align: right; }
+.status { font-size: 0.7rem; color: gray; }
+form { display: flex; gap: 0.5rem; }
+input { flex: 1; padding: 0.5rem; }
+button { padding: 0.5rem; }
