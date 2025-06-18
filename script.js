@@ -1,88 +1,76 @@
-const socket = io();
-const form = document.getElementById('chat-form');
-const input = document.getElementById('message-input');
-const messagesContainer = document.getElementById('messages');
-const offlineBanner = document.getElementById('offline-message');
-
-let username = prompt("Enter your username:") || "Anonymous";
-let selectedContact = "Anna"; // default contact
-let messageStore = {}; // messages per contact
-
-// Select a contact
-function selectContact(name) {
-  selectedContact = name;
-  renderMessages();
-}
-
-function renderMessages() {
-  messagesContainer.innerHTML = '';
-  const messages = messageStore[selectedContact] || [];
-  messages.forEach(msg => addMessageToUI(msg));
-}
-
-function addMessageToUI(msg) {
-  const msgEl = document.createElement('div');
-  msgEl.classList.add('message');
-  msgEl.innerHTML = `
-    <strong>${msg.username}</strong>: ${msg.text}
-    <div class="meta">${msg.timestamp}</div>
-    <div class="status">${msg.status || ''}</div>
-  `;
-  messagesContainer.appendChild(msgEl);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-form.addEventListener('submit', function (e) {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (text === '') return;
-
-  const timestamp = new Date().toLocaleTimeString();
-  const msg = {
-    username,
-    text,
-    timestamp,
-    contact: selectedContact,
-    status: 'sent'
-  };
-
-  // Save to local view
-  if (!messageStore[selectedContact]) messageStore[selectedContact] = [];
-  messageStore[selectedContact].push(msg);
-  addMessageToUI(msg);
-
-  socket.emit('chat message', msg);
-  input.value = '';
-});
-
-// Update message status when delivered
-socket.on('chat message', function (msg) {
-  msg.status = 'delivered';
-  if (!messageStore[msg.contact]) messageStore[msg.contact] = [];
-  messageStore[msg.contact].push(msg);
-
-  if (msg.contact === selectedContact) {
-    addMessageToUI(msg);
-  }
-});
-
-// Simulate "read" when user scrolls to bottom
-messagesContainer.addEventListener('scroll', () => {
-  const isAtBottom = messagesContainer.scrollTop + messagesContainer.clientHeight >= messagesContainer.scrollHeight;
-  if (isAtBottom) {
-    const all = messagesContainer.querySelectorAll('.status');
-    all.forEach(el => el.textContent = 'read');
-  }
-});
-
-// Offline Detection
+let socket, token, currentChat;
+const offlineEl = document.getElementById('offline');
 function updateOnlineStatus() {
-  if (!navigator.onLine) {
-    offlineBanner.classList.remove('hidden');
-  } else {
-    offlineBanner.classList.add('hidden');
-  }
+  offlineEl.style.display = navigator.onLine ? 'none' : 'block';
 }
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
+
+async function register() {
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('pass').value;
+  await fetch('/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, password })
+  });
+  alert('Registered. Please login.');
+}
+async function login() {
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('pass').value;
+  const res = await fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, password })
+  });
+  if (!res.ok) return alert('Login failed');
+  const data = await res.json();
+  token = data.token;
+  showApp(data.contacts);
+}
+function logout() {
+  socket.disconnect();
+  location.reload();
+}
+function showApp(contacts) {
+  document.getElementById('auth').hidden = true;
+  document.getElementById('app').hidden = false;
+  socket = io({ auth: { token } });
+  const contactsEl = document.getElementById('contacts');
+  contacts.forEach(c => {
+    const el = document.createElement('div');
+    el.textContent = c;
+    el.onclick = () => selectChat(c);
+    contactsEl.appendChild(el);
+  });
+  document.getElementById('btnMenu').onclick = () => {
+    contactsEl.classList.toggle('show');
+  };
+  socket.on('chat message', appendMsg);
+  socket.on('message read', id => {
+    document.getElementById(id)?.classList.add('read');
+  });
+}
+function selectChat(c) {
+  currentChat = c;
+  document.getElementById('messages').innerHTML = '';
+}
+function appendMsg(msg) {
+  if (msg.to !== currentChat && msg.from !== currentChat) return;
+  const msgEl = document.createElement('div');
+  msgEl.className = 'message' + (msg.from === currentChat ? '' : ' own');
+  msgEl.id = msg._id;
+  msgEl.innerHTML = `<b>${msg.from}</b> <span class="status">${msg.timestamp}${msg.isRead ? ' ✓' : ' ...'}</span><br>${msg.text}`;
+  document.getElementById('messages').appendChild(msgEl);
+  msgEl.scrollIntoView();
+  if (msg.to === currentChat) socket.emit('message read', msg._id);
+}
+function sendMsg(e) {
+  e.preventDefault();
+  const text = document.getElementById('msgInput').value;
+  if (!text || !currentChat) return;
+  socket.emit('chat message', { to: currentChat, text });
+  document.getElementById('msgInput').value = '';
+}
