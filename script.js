@@ -10,23 +10,21 @@ const toggleContactsBtn = document.getElementById('toggle-contacts');
 const typingStatus = document.getElementById('typing-status');
 const loadingScreen = document.getElementById('loading-screen');
 
-// User and chat state
-let username = prompt("Enter your username:") || "Anonymous";
-let currentChatUser = null;
-let contacts = {}; // { username: { online, unreadCount, typing } }
-
-// Show loading screen initially
-function showLoading(show) {
-  if (show) loadingScreen.classList.remove('hidden');
-  else loadingScreen.classList.add('hidden');
-}
-
-// Detect offline/online and show loading
 window.addEventListener('load', () => {
   showLoading(!navigator.onLine);
 });
 window.addEventListener('offline', () => showLoading(true));
 window.addEventListener('online', () => showLoading(false));
+
+function showLoading(show) {
+  if (show) loadingScreen.classList.remove('hidden');
+  else loadingScreen.classList.add('hidden');
+}
+
+// User and chat state
+let username = prompt("Enter your username:") || "Anonymous";
+let currentChatUser = null;
+let contacts = {}; // { username: { online, unreadCount, typing } }
 
 // Toggle contacts panel
 toggleContactsBtn.addEventListener('click', () => {
