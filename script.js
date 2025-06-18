@@ -1,22 +1,24 @@
-const socket = io(); // connect to server
+const socket = io();
 const form = document.getElementById('chat-form');
 const input = document.getElementById('message-input');
 const messagesContainer = document.getElementById('messages');
 
+let username = prompt("Enter your username:") || "Anonymous";
+
 form.addEventListener('submit', function (e) {
   e.preventDefault();
-  const messageText = input.value.trim();
-  if (messageText === '') return;
+  const text = input.value.trim();
+  if (text === '') return;
 
-  socket.emit('chat message', messageText); // send to server
+  const timestamp = new Date().toLocaleTimeString();
+  socket.emit('chat message', { username, text, timestamp });
   input.value = '';
 });
 
-// Receive and display message
 socket.on('chat message', function (msg) {
-  const message = document.createElement('div');
-  message.classList.add('message');
-  message.textContent = msg;
-  messagesContainer.appendChild(message);
+  const messageEl = document.createElement('div');
+  messageEl.classList.add('message');
+  messageEl.innerHTML = `<strong>${msg.username}</strong> [${msg.timestamp}]: ${msg.text}`;
+  messagesContainer.appendChild(messageEl);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 });
