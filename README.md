@@ -1,1 +1,1 @@
-Processing of Simple Messenger
+Messenger is a simple real-time chat application built with JavaScript, CSS, and HTML. It allows users to send and receive messages instantly, simulating a basic messenger interface. Designed for learning and demonstrating core frontend and communication concepts.
